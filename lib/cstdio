@@ -1,10 +1,22 @@
-#define VIDEO_MEMORY_PTR (char*) 0xb8000
-#define VIDEO_MEMORY_CURSOR_PTR (char*) 0x9000
+#define VIDEO_MEMORY_PTR (char*)0xb8000
+#define VIDEO_MEMORY_CURSOR_PTR (int*)0x9000
+
+void _clear()
+{
+    for (char* videoMem = VIDEO_MEMORY_PTR; videoMem < VIDEO_MEMORY_PTR + 80 * 25 * 2; videoMem += 2) {
+        *videoMem = ' ';
+    }
+}
 
 void _printc(char c, int i)
 {
-    char* videoMem = VIDEO_MEMORY_PTR;
-    *(videoMem + i * 2) = c;
+    if (i < 0 || i > 80 * 25) {
+        return;
+    }
+
+    char* videoMem = VIDEO_MEMORY_PTR + i * 2;
+    *videoMem = c;
+    *(videoMem + 1) = 0x0F;
 }
 
 void _printc_at_cursor(char c)
@@ -13,11 +25,95 @@ void _printc_at_cursor(char c)
     *VIDEO_MEMORY_CURSOR_PTR += 1;
 }
 
-void printf()
+void _print_hex(unsigned int integer, bool upperCase)
 {
-    _printc_at_cursor('H');
-    _printc_at_cursor('e');
-    _printc_at_cursor('l');
-    _printc_at_cursor('l');
-    _printc_at_cursor('o');
+    char remainingNibbles = 8;
+
+    while (!(integer & 0xF0000000)) {
+		integer <<= 4;
+        remainingNibbles--;
+    }
+
+    while (remainingNibbles--) {
+        char i = integer >> 28;
+        if (i <= 9) {
+            _printc_at_cursor(48 + i);
+        } else if (upperCase) {
+            _printc_at_cursor(55 + i);
+        } else {
+            _printc_at_cursor(87 + i);
+        }
+
+		integer <<= 4;
+    }
+}
+
+void printf(const char *format, ...)
+{
+    _clear();
+
+    __builtin_va_list args;
+    __builtin_va_start(args, format);
+
+    bool formatted = false;
+   	while (*format) {
+
+        switch (*format) {
+            case '\n':
+                *VIDEO_MEMORY_CURSOR_PTR += 80 - (*VIDEO_MEMORY_CURSOR_PTR % 80);
+
+                break;
+            case '%':
+            	switch (*(++format)) {
+					case 'd':
+					case 'i':
+
+                        break;
+					case 'u':
+					case 'o':
+                        break;
+					case 'x':
+                        _print_hex(__builtin_va_arg(args, unsigned int), false);
+
+                        break;
+					case 'X':
+                        _print_hex(__builtin_va_arg(args, unsigned int), true);
+
+                        break;
+                    case 'f':
+                    case 'F':
+                    case 'e':
+                    case 'E':
+                    case 'g':
+                    case 'G':
+                    case 'a':
+                    case 'A':
+                        break;
+                    case 'c':
+
+                        break;
+                    case 's':
+
+                        break;
+                	case 'p':
+
+                        break;
+                    case 'n':
+                        // lol
+
+                        break;
+                    case '%':
+            			_printc_at_cursor('%');
+            	}
+
+                break;
+            case '\r':
+            case '\a':
+                break;
+            default:
+            	_printc_at_cursor(*format);
+        }
+
+        format++;
+    }
 }

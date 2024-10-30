@@ -1,6 +1,11 @@
 [org 0x7c00]
 KERNEL_OFFSET equ 0x1000
 
+    ; disable blinking cursor
+    mov ch, 32
+    mov ah, 1
+    int 10h
+
     mov [BOOT_DRIVE], dl
 
     mov bp, 0xA000
