@@ -8,7 +8,7 @@ void _clear()
     }
 }
 
-void _printc(char c, int i)
+void _setc(char c, int i)
 {
     if (i < 0 || i > 80 * 25) {
         return;
@@ -19,10 +19,33 @@ void _printc(char c, int i)
     *(videoMem + 1) = 0x0F;
 }
 
-void _printc_at_cursor(char c)
+void _printc(char c)
 {
-	_printc(c, *VIDEO_MEMORY_CURSOR_PTR);
+	_setc(c, *VIDEO_MEMORY_CURSOR_PTR);
     *VIDEO_MEMORY_CURSOR_PTR += 1;
+}
+
+void _printc_formatted(char c)
+{
+    switch (c) {
+        case '\n':
+            *VIDEO_MEMORY_CURSOR_PTR += 80 - (*VIDEO_MEMORY_CURSOR_PTR % 80);
+
+            break;
+        case '\r':
+        case '\a':
+            break;
+        default:
+            _printc(c);
+    }
+}
+
+void _print(char* string)
+{
+   	while (*string) {
+        _printc_formatted(*string);
+        string++;
+    }
 }
 
 void _print_hex(unsigned int integer, bool upperCase)
@@ -37,15 +60,24 @@ void _print_hex(unsigned int integer, bool upperCase)
     while (remainingNibbles--) {
         char i = integer >> 28;
         if (i <= 9) {
-            _printc_at_cursor(48 + i);
+            _printc(48 + i);
         } else if (upperCase) {
-            _printc_at_cursor(55 + i);
+            _printc(55 + i);
         } else {
-            _printc_at_cursor(87 + i);
+            _printc(87 + i);
         }
 
 		integer <<= 4;
     }
+}
+
+void _print_oct(unsigned int integer)
+{
+    if (integer >= 8) {
+        _print_oct(integer / 8);
+    }
+
+    _printc((integer % 8) + '0');
 }
 
 void _print_dec_unsigned(unsigned int integer)
@@ -54,13 +86,13 @@ void _print_dec_unsigned(unsigned int integer)
         _print_dec_unsigned(integer / 10);
     }
 
-    _printc_at_cursor((integer % 10) + '0');
+    _printc((integer % 10) + '0');
 }
 
 void _print_dec_signed(int integer)
 {
     if (integer < 0) {
-        _printc_at_cursor('-');
+        _printc('-');
         integer = -integer;
     }
 
@@ -76,65 +108,71 @@ void printf(const char *format, ...)
 
     bool formatted = false;
    	while (*format) {
+        if (*format == '%') {
+            switch (*(++format)) {
+				case 'd':
+				case 'i':
+                    _print_dec_signed(__builtin_va_arg(args, int));
 
-        switch (*format) {
-            case '\n':
-                *VIDEO_MEMORY_CURSOR_PTR += 80 - (*VIDEO_MEMORY_CURSOR_PTR % 80);
+                    break;
+				case 'u':
+                    _print_dec_unsigned(__builtin_va_arg(args, unsigned int));
 
-                break;
-            case '%':
-            	switch (*(++format)) {
-					case 'd':
-					case 'i':
-                        _print_dec_signed(__builtin_va_arg(args, int));
+                    break;
+				case 'o':
+                    _print_oct(__builtin_va_arg(args, unsigned int));
 
-                        break;
-					case 'u':
-                        _print_dec_unsigned(__builtin_va_arg(args, unsigned int));
+                    break;
+				case 'x':
+                    _print_hex(__builtin_va_arg(args, unsigned int), false);
 
-                        break;
-					case 'o':
-                        break;
-					case 'x':
-                        _print_hex(__builtin_va_arg(args, unsigned int), false);
+                    break;
+				case 'X':
+                    _print_hex(__builtin_va_arg(args, unsigned int), true);
 
-                        break;
-					case 'X':
-                        _print_hex(__builtin_va_arg(args, unsigned int), true);
+                    break;
+                case 'f':
+                case 'F':
+                    // TODO: Decimal floating point
+                case 'e':
+                    // TODO: Scientific notation (mantissa/exponent), lowercase
+                case 'E':
+                    // TODO: Scientific notation (mantissa/exponent), uppercase
+                case 'g':
+                    // TODO: Use the shortest representation: %e or %f
+                case 'G':
+                    // TODO: Use the shortest representation: %E or %F
+                case 'a':
+                    // TODO: Hexadecimal floating point, lowercase
+                case 'A':
+                    // TODO: Hexadecimal floating point, uppercase
+                    break;
+                case 'c':
+            	    _printc(__builtin_va_arg(args, unsigned int));
 
-                        break;
-                    case 'f':
-                    case 'F':
-                    case 'e':
-                    case 'E':
-                    case 'g':
-                    case 'G':
-                    case 'a':
-                    case 'A':
-                        break;
-                    case 'c':
+                    break;
+                case 's':
+            	    _print(__builtin_va_arg(args, char *));
 
-                        break;
-                    case 's':
+                    break;
+                case 'p':
+                    _print_hex(__builtin_va_arg(args, unsigned int), false);
 
-                        break;
-                	case 'p':
+                    break;
+                case 'n':
+                    /**
+                     * TODO
+                     *  Nothing printed.
+                     *  The corresponding argument must be a pointer to a signed int.
+                     *  The number of characters written so far is stored in the pointed location.
+                     */
 
-                        break;
-                    case 'n':
-                        // lol
-
-                        break;
-                    case '%':
-            			_printc_at_cursor('%');
-            	}
-
-                break;
-            case '\r':
-            case '\a':
-                break;
-            default:
-            	_printc_at_cursor(*format);
+                    break;
+                case '%':
+            		_printc('%');
+            }
+        } else {
+            _printc_formatted(*format);
         }
 
         format++;
