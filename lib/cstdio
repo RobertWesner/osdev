@@ -48,6 +48,25 @@ void _print_hex(unsigned int integer, bool upperCase)
     }
 }
 
+void _print_dec_unsigned(unsigned int integer)
+{
+    if (integer >= 10) {
+        _print_dec_unsigned(integer / 10);
+    }
+
+    _printc_at_cursor((integer % 10) + '0');
+}
+
+void _print_dec_signed(int integer)
+{
+    if (integer < 0) {
+        _printc_at_cursor('-');
+        integer = -integer;
+    }
+
+    _print_dec_unsigned((unsigned int)integer);
+}
+
 void printf(const char *format, ...)
 {
     _clear();
@@ -67,9 +86,13 @@ void printf(const char *format, ...)
             	switch (*(++format)) {
 					case 'd':
 					case 'i':
+                        _print_dec_signed(__builtin_va_arg(args, int));
 
                         break;
 					case 'u':
+                        _print_dec_unsigned(__builtin_va_arg(args, unsigned int));
+
+                        break;
 					case 'o':
                         break;
 					case 'x':
