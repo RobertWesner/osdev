@@ -1,0 +1,23 @@
+#define VIDEO_MEMORY_PTR (char*) 0xb8000
+#define VIDEO_MEMORY_CURSOR_PTR (char*) 0x9000
+
+void _printc(char c, int i)
+{
+    char* videoMem = VIDEO_MEMORY_PTR;
+    *(videoMem + i * 2) = c;
+}
+
+void _printc_at_cursor(char c)
+{
+	_printc(c, *VIDEO_MEMORY_CURSOR_PTR);
+    *VIDEO_MEMORY_CURSOR_PTR += 1;
+}
+
+void printf()
+{
+    _printc_at_cursor('H');
+    _printc_at_cursor('e');
+    _printc_at_cursor('l');
+    _printc_at_cursor('l');
+    _printc_at_cursor('o');
+}
