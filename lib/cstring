@@ -3,8 +3,7 @@
 #ifndef _cstring_
 #define _cstring_
 
-void memcpy(void* destination, const void* source, size_t num)
-{
+void memcpy(void* destination, const void* source, size_t num) {
     for (size_t i = 0; i < num; i++) {
         ((unsigned char*)destination)[i] = ((unsigned char*)source)[i];
     }
@@ -50,8 +49,7 @@ void memcpy(void* destination, const void* source, size_t num)
 
 // TODO: strerror
 
-size_t strlen(const char* str)
-{
+size_t strlen(const char* str) {
     size_t len = 0
     while (str[len]) {
         len++;

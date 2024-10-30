@@ -6,15 +6,14 @@
 #define VIDEO_MEMORY_PTR (char*)0xb8000
 #define VIDEO_MEMORY_CURSOR_PTR (int*)0x9000
 
-void _clear()
-{
+void _clear() {
     for (char* videoMem = VIDEO_MEMORY_PTR; videoMem < VIDEO_MEMORY_PTR + 80 * 25 * 2; videoMem += 2) {
         *videoMem = ' ';
     }
+    *VIDEO_MEMORY_CURSOR_PTR = 0;
 }
 
-void _setc(char c, int pos)
-{
+void _setc(char c, int pos) {
     if (pos < 0 || pos > 80 * 25) {
         return;
     }
@@ -24,14 +23,12 @@ void _setc(char c, int pos)
     *(videoMem + 1) = 0x0F;
 }
 
-void putchar(char c)
-{
+void putchar(char c) {
 	_setc(c, *VIDEO_MEMORY_CURSOR_PTR);
     *VIDEO_MEMORY_CURSOR_PTR += 1;
 }
 
-void _printc_formatted(char c)
-{
+void _printc_formatted(char c) {
     switch (c) {
         case '\n':
             *VIDEO_MEMORY_CURSOR_PTR += 80 - (*VIDEO_MEMORY_CURSOR_PTR % 80);
@@ -45,16 +42,14 @@ void _printc_formatted(char c)
     }
 }
 
-void puts(char* string)
-{
+void puts(char* string) {
    	while (*string) {
         _printc_formatted(*string);
         string++;
     }
 }
 
-void _print_hex(unsigned int integer, bool upperCase)
-{
+void _print_hex(unsigned int integer, bool upperCase) {
     char remainingNibbles = 8;
 
     while (!(integer & 0xF0000000)) {
@@ -76,8 +71,7 @@ void _print_hex(unsigned int integer, bool upperCase)
     }
 }
 
-void _print_oct(unsigned int integer)
-{
+void _print_oct(unsigned int integer) {
     if (integer >= 8) {
         _print_oct(integer / 8);
     }
@@ -85,8 +79,7 @@ void _print_oct(unsigned int integer)
     putchar((integer % 8) + '0');
 }
 
-void _print_dec_unsigned(unsigned int integer)
-{
+void _print_dec_unsigned(unsigned int integer) {
     if (integer >= 10) {
         _print_dec_unsigned(integer / 10);
     }
@@ -94,8 +87,7 @@ void _print_dec_unsigned(unsigned int integer)
     putchar((integer % 10) + '0');
 }
 
-void _print_dec_signed(int integer)
-{
+void _print_dec_signed(int integer) {
     if (integer < 0) {
         putchar('-');
         integer = -integer;
@@ -104,8 +96,7 @@ void _print_dec_signed(int integer)
     _print_dec_unsigned((unsigned int)integer);
 }
 
-void printf(const char *format, ...)
-{
+void printf(const char *format, ...) {
     _clear();
 
     __builtin_va_list args;

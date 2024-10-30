@@ -1,4 +1,18 @@
 #ifndef _cstdlib_
 #define _cstdlib_
 
+#include "../src/MemoryManager.h"
+
+void* malloc(size_t size) {
+    return MemoryManager::getInstance()->allocate(size);
+}
+
+void* realloc(void* ptr, size_t size) {
+    return MemoryManager::getInstance()->reallocate(ptr, size);
+}
+
+void free(void* ptr) {
+    return MemoryManager::getInstance()->free(ptr);
+}
+
 #endif
