@@ -1,0 +1,63 @@
+#include <cstddef>
+
+#ifndef _cstring_
+#define _cstring_
+
+void memcpy(void* destination, const void* source, size_t num)
+{
+    for (size_t i = 0; i < num; i++) {
+        ((unsigned char*)destination)[i] = ((unsigned char*)source)[i];
+    }
+}
+
+// TODO: memmove
+
+// TODO: strcpy
+
+// TODO: strncpy
+
+// TODO: strcat
+
+// TODO: strncat
+
+// TODO: memcmp
+
+// TODO: strcmp
+
+// TODO: strcoll
+
+// TODO: strncmp
+
+// TODO: strxfrm
+
+// TODO: memchr
+
+// TODO: strchr
+
+// TODO: strcspn
+
+// TODO: strpbrk
+
+// TODO: strrchr
+
+// TODO: strspn
+
+// TODO: strstr
+
+// TODO: strtok
+
+// TODO: memset
+
+// TODO: strerror
+
+size_t strlen(const char* str)
+{
+    size_t len = 0
+    while (str[len]) {
+        len++;
+    }
+
+    return len;
+}
+
+#endif

@@ -1,3 +1,8 @@
+#ifndef _cstdio_
+#define _cstdio_
+
+// TODO: complete this (lol)
+
 #define VIDEO_MEMORY_PTR (char*)0xb8000
 #define VIDEO_MEMORY_CURSOR_PTR (int*)0x9000
 
@@ -8,18 +13,18 @@ void _clear()
     }
 }
 
-void _setc(char c, int i)
+void _setc(char c, int pos)
 {
-    if (i < 0 || i > 80 * 25) {
+    if (pos < 0 || pos > 80 * 25) {
         return;
     }
 
-    char* videoMem = VIDEO_MEMORY_PTR + i * 2;
+    char* videoMem = VIDEO_MEMORY_PTR + pos * 2;
     *videoMem = c;
     *(videoMem + 1) = 0x0F;
 }
 
-void _printc(char c)
+void putchar(char c)
 {
 	_setc(c, *VIDEO_MEMORY_CURSOR_PTR);
     *VIDEO_MEMORY_CURSOR_PTR += 1;
@@ -36,11 +41,11 @@ void _printc_formatted(char c)
         case '\a':
             break;
         default:
-            _printc(c);
+            putchar(c);
     }
 }
 
-void _print(char* string)
+void puts(char* string)
 {
    	while (*string) {
         _printc_formatted(*string);
@@ -60,11 +65,11 @@ void _print_hex(unsigned int integer, bool upperCase)
     while (remainingNibbles--) {
         char i = integer >> 28;
         if (i <= 9) {
-            _printc(48 + i);
+            putchar(48 + i);
         } else if (upperCase) {
-            _printc(55 + i);
+            putchar(55 + i);
         } else {
-            _printc(87 + i);
+            putchar(87 + i);
         }
 
 		integer <<= 4;
@@ -77,7 +82,7 @@ void _print_oct(unsigned int integer)
         _print_oct(integer / 8);
     }
 
-    _printc((integer % 8) + '0');
+    putchar((integer % 8) + '0');
 }
 
 void _print_dec_unsigned(unsigned int integer)
@@ -86,13 +91,13 @@ void _print_dec_unsigned(unsigned int integer)
         _print_dec_unsigned(integer / 10);
     }
 
-    _printc((integer % 10) + '0');
+    putchar((integer % 10) + '0');
 }
 
 void _print_dec_signed(int integer)
 {
     if (integer < 0) {
-        _printc('-');
+        putchar('-');
         integer = -integer;
     }
 
@@ -110,6 +115,7 @@ void printf(const char *format, ...)
    	while (*format) {
         if (*format == '%') {
             switch (*(++format)) {
+                // TODO: length sub-specifiers...
 				case 'd':
 				case 'i':
                     _print_dec_signed(__builtin_va_arg(args, int));
@@ -148,11 +154,11 @@ void printf(const char *format, ...)
                     // TODO: Hexadecimal floating point, uppercase
                     break;
                 case 'c':
-            	    _printc(__builtin_va_arg(args, unsigned int));
+            	    putchar(__builtin_va_arg(args, unsigned int));
 
                     break;
                 case 's':
-            	    _print(__builtin_va_arg(args, char *));
+            	    puts(__builtin_va_arg(args, char *));
 
                     break;
                 case 'p':
@@ -169,7 +175,7 @@ void printf(const char *format, ...)
 
                     break;
                 case '%':
-            		_printc('%');
+            		putchar('%');
             }
         } else {
             _printc_formatted(*format);
@@ -178,3 +184,5 @@ void printf(const char *format, ...)
         format++;
     }
 }
+
+#endif

@@ -1,5 +1,2 @@
 .idea
-*.bin
-*.o
-*.so
 cmake-build-debug
