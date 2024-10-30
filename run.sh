@@ -1,9 +1,10 @@
 #!/bin/bash
 
 nasm boot_sect.asm -f bin -o boot_sect.bin
+nasm -f elf64 kernel_entry.asm -o kernel_entry.o
 
 g++ -ffreestanding -c kernel.cpp -o kernel.o
-ld -o kernel.bin -Ttext 0x1000 kernel.o --oformat binary
+ld -o kernel.bin -Ttext 0x1000 kernel_entry.o kernel.o --oformat binary
 
 cat boot_sect.bin kernel.bin > os-image.bin
 
