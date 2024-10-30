@@ -1,45 +1,32 @@
-[bits 16]
 [org 0x7c00]
 
-    mov bx, INIT_MSG
-    call print
-
-    ; BIOS stores our boot drive in DL, we keep note of it in the BOOT_DRIVE variable.
-    mov [BOOT_DRIVE], dl
-
-    ; Store the stack at 0x8000
-    mov bp, 0x8000
+    mov bp, 0x9000
     mov sp, bp
 
-    ; Load 5 sectors to 0x0000(ES):0x9000(BX)
-    mov bx, 0x9000
-    mov dh, 5
-    mov dl, [BOOT_DRIVE]
-    call disk_load
-
-    ; disk loaded successfully
-    mov bx, DISK_SUCCESS_MSG
+    mov bx, MSG_REAL_MODE
     call print
 
-    mov dx, [0x9000]
-    call print_hex_16
+    call switch_to_pm
 
-    mov dx, [0x9000 + 512]
-    call print_hex_16
+    ; isn't this jmp unnecessary?
+    jmp $
+
+%include "boot_16/print.asm"
+%include "gdt.asm"
+%include "boot_32/print.asm"
+%include "switch_to_pm.asm"
+
+[bits 32]
+
+BEGIN_PM:
+    mov ebx, MSG_PROT_MODE
+    call print32
 
     jmp $
 
-%include "boot/print.asm"
-%include "boot/disk.asm"
+; GLOBALS
+MSG_REAL_MODE           db "Started in 16-bit Real Mode", 0
+MSG_PROT_MODE           db "Successfully landed in 32-bit Protected Mode", 0
 
-BOOT_DRIVE              db 0
-
-INIT_MSG                db 'Started bootloader!', 0x0D, 0x0A, 0
-DISK_SUCCESS_MSG        db 'Loaded disk!', 0x0D, 0x0A, 0
-
-times 510-($-$$) db 0
-
+times 510-($-$$)        db 0
 dw 0xAA55
-
-times 256 dw 0xDADA
-times 256 dw 0xFACE
