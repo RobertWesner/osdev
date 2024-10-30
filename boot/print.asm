@@ -59,6 +59,7 @@ print_hex_16:
     shr dx, 8
     call print_hex_8
     pop dx
+    and dX, 0x00FF
     call print_hex_8
     popa
     ret
