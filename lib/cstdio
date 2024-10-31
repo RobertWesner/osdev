@@ -101,7 +101,7 @@ void _print_dec_signed(int integer) {
 }
 
 void printf(const char *format, ...) {
-//    _clear();
+    _clear();
     _reset_cursor();
 
     __builtin_va_list args;

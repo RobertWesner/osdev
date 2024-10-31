@@ -11,6 +11,11 @@ void setupKeymapDE()
 
     // + 0x80 => UP
 
+    // 0xE  -> backspace
+    // 0x1C -> return
+    // 0x1  -> escape
+    // 0x5  -> tab
+
     // 1 - 0
     for (uint8_t i = 0; i < 10; i++) {
         keymap->map[i + 0x2] = '0' + i;
@@ -100,6 +105,8 @@ void setupKeymapDE()
     keymap->mapShifted[0x33] = ';';
     keymap->mapShifted[0x34] = ':';
     keymap->mapShifted[0x35] = '_';
+
+    keymap->map[0x39] = ' ';
 }
 
 #endif

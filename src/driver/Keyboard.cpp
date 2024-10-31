@@ -15,6 +15,7 @@ void onKeyDown(void* keymap, uint8_t keyCode);
 void onKeyUp(void* keymap, uint8_t keyCode);
 
 class KeyBoard {
+    uint8_t last = 0;
 public:
     bool keys[128]{};
 
@@ -41,10 +42,14 @@ public:
     void handle() {
         uint8_t key = inb(0x60);
 
+        if (key == this->last) {
+            return;
+        }
+        this->last = key;
+
         bool down;
         if (key >= 0x80) {
             key -= 0x80;
-
             down = false;
         } else {
             down = true;
@@ -60,6 +65,7 @@ public:
 
         switch (key) {
             case 0x2A:
+            case 0x36:
                 this->shift = down;
                 break;
             case 0x1D:
@@ -69,6 +75,7 @@ public:
                 this->alt = down;
                 break;
             case 0x5B:
+            case 0x5C:
                 this->super = down;
                 break;
             default:;

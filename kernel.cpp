@@ -10,7 +10,7 @@ void onKeyDown(void* ptr, uint8_t keyCode) {
     auto keyboard = static_cast<KeyBoard *>(ptr);
 
     printf(
-        "DOWN: %X       \nCHAR: %c",
+        "DOWN: %X\nCHAR: %c",
         keyCode,
         keyboard->getChar(keyCode)
     );
@@ -20,7 +20,7 @@ void onKeyUp(void* ptr, uint8_t keyCode) {
     auto keyboard = static_cast<KeyBoard *>(ptr);
 
     printf(
-        "UP:   %X       \nCHAR: %c",
+        "UP:   %X\nCHAR: %c",
         keyCode,
         keyboard->getChar(keyCode)
     );
