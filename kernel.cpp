@@ -1,36 +1,26 @@
 #include <cstdio>
 #include <cstdint>
 
-#include "src/MemoryManager.h"
-#include "src/driver/Interrupt.cpp"
+#include "init.cpp"
+#include "Shell.cpp"
 #include "src/driver/Keyboard.cpp"
-#include "src/driver/keymap/de.cpp"
-#include "src/text.cpp"
+
+static Shell* shellInstance;
 
 void onKeyDown(void* ptr, uint8_t keyCode) {
-    auto keyboard = static_cast<KeyBoard *>(ptr);
-
-    if (keyCode == 0x1C) {
-        putchar('\n');
-    } else {
-        putchar(keyboard->getChar(keyCode));
-    }
+    shellInstance->handleKeyDown(static_cast<KeyBoard*>(ptr), keyCode);
 }
 
 void onKeyUp(void* ptr, uint8_t keyCode) {
-    auto keyboard = static_cast<KeyBoard *>(ptr);
-
+    shellInstance->handleKeyUp(static_cast<KeyBoard*>(ptr), keyCode);
 }
 
 [[noreturn]] int main() {
-    MemoryManager::getInstance()->setUp();
-    idt_init();
-    text_out::init();
-    keyboard_init();
-    setupKeymapDE();
+    init();
+
+    shellInstance = shell();
 
     auto* keyboard = KeyBoard::getInstance();
-
     while (true) {
         keyboard->handle();
     }

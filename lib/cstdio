@@ -3,11 +3,13 @@
 
 #include "../src/text.cpp"
 
+// TODO: currently only 3/56
+
 void putchar(char c) {
    	text_out::printc(c);
 }
 
-void puts(char* string) {
+void puts(const char* string) {
    	text_out::print(string);
 }
 

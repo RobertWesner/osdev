@@ -18,11 +18,29 @@ void memmove(void* destination, const void* source, size_t num) {
     free(buffer);
 }
 
-// TODO: strcpy
+char* strcpy(char* destination, const char* source) {
+    for (size_t i = 0; source[i]; i++) {
+        ((uint8_t*)destination)[i] = ((uint8_t*)source)[i];
+    }
 
-// TODO: strncpy
+    return destination;
+}
 
-// TODO: strcat
+char* strncpy(char* destination, const char* source, size_t num) {
+    for (size_t i = 0; source[i] && i < num; i++) {
+        ((uint8_t*)destination)[i] = ((uint8_t*)source)[i];
+    }
+
+    for (size_t i = 0; i < num; i++) {
+        ((uint8_t*)destination)[i] = 0;
+    }
+
+    return destination;
+}
+
+//char* strcat(char* destionation, const char* source) {
+//
+//}
 
 // TODO: strncat
 

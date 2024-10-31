@@ -55,14 +55,6 @@ public:
             down = true;
         }
 
-        if (down) {
-            this->keys[key] = true;
-            onKeyDown(this, key);
-        } else {
-            this->keys[key] = false;
-            onKeyUp(this, key);
-        }
-
         switch (key) {
             case 0x2A:
             case 0x36:
@@ -78,7 +70,14 @@ public:
             case 0x5C:
                 this->super = down;
                 break;
-            default:;
+            default:
+                if (down) {
+                    this->keys[key] = true;
+                    onKeyDown(this, key);
+                } else {
+                    this->keys[key] = false;
+                    onKeyUp(this, key);
+                }
         }
     }
 };

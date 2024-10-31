@@ -63,7 +63,7 @@ namespace text_out {
         }
     }
 
-    void print(char* string) {
+    void print(const char* string) {
    	    while (*string) {
             printc(*string);
             string++;

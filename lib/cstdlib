@@ -3,6 +3,8 @@
 
 #include "../src/MemoryManager.h"
 
+// TODO: implement all 47 functions, macros, and types
+
 void* malloc(size_t size) {
     return MemoryManager::getInstance()->allocate(size);
 }

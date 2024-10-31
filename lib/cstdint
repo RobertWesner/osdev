@@ -1,8 +1,6 @@
 #ifndef _cstdint_
 #define _cstdint_
 
-// TODO: Macros
-
 typedef long long int intmax_t;
 typedef unsigned long long int uintmax_t;
 

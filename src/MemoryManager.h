@@ -55,29 +55,39 @@ class MemoryManager {
                 section = section->next;
             }
 
-            /*
-             .-------------------------------------------------->
-             |    | free         |                      |      >
-             '-------------------------------------------------->
-            */
-            const MemorySection* newMemory = section + this->overhead + size;
-            newMemory->size = section->size - this->overhead - size;
-            /*
-             .-------------------------------------------------->
-             |    |         | new |                       |      >
-             '-------------------------------------------------->
-            */
-            section->size = size;
-            /*
-             .-------------------------------------------------->
-             |    | size    | new |                      |      >
-             '-------------------------------------------------->
-            */
+            if (section->size == size) {
+                // exact match, use existing sector
 
-            if (section->previous == nullptr) {
-                this->availableMemory = newMemory;
+                // patch up the hole
+                section->previous->next = section->next;
+                section->previous->previous = section->previous;
             } else {
-                section->previous->next = newMemory;
+                // split sector into smaller parts
+
+                /*
+                 .-------------------------------------------------->
+                 |    | free         |                      |      >
+                 '-------------------------------------------------->
+                */
+                const MemorySection* newMemory = section + this->overhead + size;
+                newMemory->size = section->size - this->overhead - size;
+                /*
+                 .-------------------------------------------------->
+                 |    |         | new |                       |      >
+                 '-------------------------------------------------->
+                */
+                section->size = size;
+                /*
+                 .-------------------------------------------------->
+                 |    | size    | new |                      |      >
+                 '-------------------------------------------------->
+                */
+
+                if (section->previous == nullptr) {
+                    this->availableMemory = newMemory;
+                } else {
+                    section->previous->next = newMemory;
+                }
             }
 
             return (void*)(section + this->overhead);
