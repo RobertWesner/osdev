@@ -76,7 +76,7 @@ Since it has more capacity than n it gets split into two sections:
 The references inside the list get patched up since old will be a gaping hole
 in the currently free memory once its gone:
 .-------------------------------------------------->
-| prec >##########< new |                     |    >
+| prev >##########< new |                     |    >
 '-------------------------------------------------->
 
 (*old + overhead) is returned as the pointer to allocated memory.

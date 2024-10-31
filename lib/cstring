@@ -5,6 +5,8 @@
 #ifndef _cstring_
 #define _cstring_
 
+// TODO: refactor all the counter variable based methods to increment the pointers (see: strcat)
+
 void memcpy(void* destination, const void* source, size_t num) {
     for (size_t i = 0; i < num; i++) {
         ((uint8_t*)destination)[i] = ((uint8_t*)source)[i];
@@ -38,9 +40,22 @@ char* strncpy(char* destination, const char* source, size_t num) {
     return destination;
 }
 
-//char* strcat(char* destionation, const char* source) {
-//
-//}
+char* strcat(char* destination, const char* source) {
+    // Skip to end of destination
+    while (*destination) {
+        destination++;
+    }
+
+    while (*source) {
+        *destination = *source;
+        source++;
+        destination++;
+    }
+
+    *destination = 0;
+
+    return destination;
+}
 
 // TODO: strncat
 

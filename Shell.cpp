@@ -24,7 +24,11 @@ class Shell {
                 if (instring[2] == 's') {
                     if (instring[3] == 't') {
                         if (instring[4] == ' ' || instring[4] == '\0') {
-                            printf("Hello World!\n\0");
+                            char foo[20];
+                            strcpy(foo, "Hello");
+                            strcat(foo, " World!");
+                            printf("%s\n", foo);
+
                             test = true;
                         }
                     }
