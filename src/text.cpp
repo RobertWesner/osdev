@@ -63,6 +63,11 @@ namespace text_out {
         }
     }
 
+    void back() {
+        *text_out_cursor -= 1;
+        setc(' ', *text_out_cursor);
+    }
+
     void print(const char* string) {
    	    while (*string) {
             printc(*string);

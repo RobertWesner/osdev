@@ -94,6 +94,9 @@ class MemoryManager {
         }
 
         void free(void* pointer) {
+            // FREEING CURRENTLY CORRUPTS MEMORY
+            return;
+
             auto section = reinterpret_cast<MemorySection*>(reinterpret_cast<size_t>(pointer) - this->overhead);
             section->next = this->availableMemory;
             this->availableMemory->previous = section;
