@@ -6,6 +6,10 @@
 #define VIDEO_MEMORY_PTR (char*)0xb8000
 #define VIDEO_MEMORY_CURSOR_PTR (int*)0x9000
 
+void _reset_cursor() {
+    *VIDEO_MEMORY_CURSOR_PTR = 0;
+}
+
 void _clear() {
     for (char* videoMem = VIDEO_MEMORY_PTR; videoMem < VIDEO_MEMORY_PTR + 80 * 25 * 2; videoMem += 2) {
         *videoMem = ' ';
@@ -97,7 +101,8 @@ void _print_dec_signed(int integer) {
 }
 
 void printf(const char *format, ...) {
-    _clear();
+//    _clear();
+    _reset_cursor();
 
     __builtin_va_list args;
     __builtin_va_start(args, format);

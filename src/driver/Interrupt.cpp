@@ -1,12 +1,18 @@
 #pragma once
 
-#ifndef INTERRUPT_H
-#define INTERRUPT_H
+#ifndef INTERRUPT
+#define INTERRUPT
 
 #include <cstdint>
 #include <cstdlib>
 
+#include "PIC.cpp"
+
 #define IDT_MAX_DESCRIPTORS 256
+#define PIC_1_CTRL 0x20
+#define PIC_2_CTRL 0xA0
+#define PIC_1_DATA 0x21
+#define PIC_2_DATA 0xA1
 
 extern "C" {
     typedef struct {
@@ -45,7 +51,37 @@ extern "C" {
         descriptor->reserved       = 0;
     }
 
+    static void initialize_pic()
+    {
+        /* ICW1 - begin initialization */
+        outb(PIC_1_CTRL, 0x11);
+        outb(PIC_2_CTRL, 0x11);
+
+        /* ICW2 - remap offset address of idt_table */
+        /*
+        * In x86 protected mode, we have to remap the PICs beyond 0x20 because
+        * Intel have designated the first 32 interrupts as "reserved" for cpu exceptions
+        */
+        outb(PIC_1_DATA, 0x20);
+        outb(PIC_2_DATA, 0x28);
+
+        /* ICW3 - setup cascading */
+        outb(PIC_1_DATA, 0x00);
+        outb(PIC_2_DATA, 0x00);
+
+        /* ICW4 - environment info */
+        outb(PIC_1_DATA, 0x01);
+        outb(PIC_2_DATA, 0x01);
+        /* Initialization finished */
+
+        /* mask interrupts */
+        outb(0x21 , 0xFF);
+        outb(0xA1 , 0xFF);
+    }
+
     void idt_init() {
+        initialize_pic();
+
         idtr.base = (uintptr_t)&idt[0];
         idtr.limit = (uint16_t)sizeof(idt_entry_t) * IDT_MAX_DESCRIPTORS - 1;
 
@@ -59,4 +95,4 @@ extern "C" {
     }
 }
 
-#endif //INTERRUPT_H
+#endif //INTERRUPT

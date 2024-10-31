@@ -1,39 +1,40 @@
 #include <cstdio>
-#include <cstdlib>
+#include <cstdint>
 
 #include "src/MemoryManager.h"
 #include "src/driver/Interrupt.cpp"
-#include "src/driver/PS2Keyboard.h"
+#include "src/driver/Keyboard.cpp"
+#include "src/driver/keymap/de.cpp"
 
-int main() {
-    MemoryManager::getInstance()->setUp();
-    idt_init();
-
-    auto* str = static_cast<char *>(malloc(6));
-    str[0] = 'H';
-    str[1] = 'e';
-    str[2] = 'l';
-    str[3] = 'l';
-
-    auto* theNumber = static_cast<unsigned int *>(malloc(sizeof(unsigned int)));
-    *theNumber = 1337;
-
-    // throw it away
-    free(str);
-
-    auto* test = static_cast<char *>(malloc(4));
-    test[0] = 'A';
-    test[1] = 'B';
-    test[2] = 'C';
-    test[3] = 0;
+void onKeyDown(void* ptr, uint8_t keyCode) {
+    auto keyboard = static_cast<KeyBoard *>(ptr);
 
     printf(
-        "Mem: %u Bytes\n%s\n%u",
-        static_cast<unsigned int>(MemoryManager::getMemoryLimit()),
-        test,
-        *theNumber
+        "DOWN: %X       \nCHAR: %c",
+        keyCode,
+        keyboard->getChar(keyCode)
     );
+}
 
-    free(theNumber);
-    free(test);
+void onKeyUp(void* ptr, uint8_t keyCode) {
+    auto keyboard = static_cast<KeyBoard *>(ptr);
+
+    printf(
+        "UP:   %X       \nCHAR: %c",
+        keyCode,
+        keyboard->getChar(keyCode)
+    );
+}
+
+[[noreturn]] int main() {
+    MemoryManager::getInstance()->setUp();
+    idt_init();
+    keyboard_init();
+    setupKeymapDE();
+
+    auto* keyboard = KeyBoard::getInstance();
+
+    while (true) {
+        keyboard->handle();
+    }
 }
