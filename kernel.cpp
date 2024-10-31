@@ -1,9 +1,13 @@
 #include <cstdio>
 #include <cstdlib>
+
 #include "src/MemoryManager.h"
+#include "src/driver/Interrupt.cpp"
+#include "src/driver/PS2Keyboard.h"
 
 int main() {
     MemoryManager::getInstance()->setUp();
+    idt_init();
 
     auto* str = static_cast<char *>(malloc(6));
     str[0] = 'H';

@@ -39,6 +39,8 @@ typedef unsigned long int uint_least64_t;
 
 typedef long int int_fast64_t;
 typedef unsigned long int uint_fast64_t;
+
+typedef unsigned long int uintptr_t;
 # else
 typedef long long int int64_t;
 typedef unsigned long long int uint64_t;
@@ -48,6 +50,8 @@ typedef unsigned long long int uint_least64_t;
 
 typedef long long int int_fast64_t;
 typedef unsigned long long int uint_fast64_t;
+
+typedef unsigned long long int uintptr_t;
 # endif
 
 #endif

@@ -15,4 +15,11 @@ void free(void* ptr) {
     return MemoryManager::getInstance()->free(ptr);
 }
 
+namespace std {
+    [[noreturn]] void exit(int) {
+        __asm__ volatile ("cli; hlt"); // Completely hangs the computer
+        while (true);
+    }
+}
+
 #endif
