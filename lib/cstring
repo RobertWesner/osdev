@@ -1,15 +1,22 @@
 #include <cstddef>
+#include <cstdlib>
+#include <cstdint>
 
 #ifndef _cstring_
 #define _cstring_
 
 void memcpy(void* destination, const void* source, size_t num) {
     for (size_t i = 0; i < num; i++) {
-        ((unsigned char*)destination)[i] = ((unsigned char*)source)[i];
+        ((uint8_t*)destination)[i] = ((uint8_t*)source)[i];
     }
 }
 
-// TODO: memmove
+void memmove(void* destination, const void* source, size_t num) {
+    void* buffer = malloc(num);
+    memcpy(buffer, source, num);
+    memcpy(destination, buffer, num);
+    free(buffer);
+}
 
 // TODO: strcpy
 
@@ -50,7 +57,7 @@ void memcpy(void* destination, const void* source, size_t num) {
 // TODO: strerror
 
 size_t strlen(const char* str) {
-    size_t len = 0
+    size_t len = 0;
     while (str[len]) {
         len++;
     }

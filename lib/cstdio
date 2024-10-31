@@ -1,109 +1,17 @@
 #ifndef _cstdio_
 #define _cstdio_
 
-// TODO: complete this (lol)
-
-#define VIDEO_MEMORY_PTR (char*)0xb8000
-#define VIDEO_MEMORY_CURSOR_PTR (int*)0x9000
-
-void _reset_cursor() {
-    *VIDEO_MEMORY_CURSOR_PTR = 0;
-}
-
-void _clear() {
-    for (char* videoMem = VIDEO_MEMORY_PTR; videoMem < VIDEO_MEMORY_PTR + 80 * 25 * 2; videoMem += 2) {
-        *videoMem = ' ';
-    }
-    *VIDEO_MEMORY_CURSOR_PTR = 0;
-}
-
-void _setc(char c, int pos) {
-    if (pos < 0 || pos > 80 * 25) {
-        return;
-    }
-
-    char* videoMem = VIDEO_MEMORY_PTR + pos * 2;
-    *videoMem = c;
-    *(videoMem + 1) = 0x0F;
-}
+#include "../src/text.cpp"
 
 void putchar(char c) {
-	_setc(c, *VIDEO_MEMORY_CURSOR_PTR);
-    *VIDEO_MEMORY_CURSOR_PTR += 1;
-}
-
-void _printc_formatted(char c) {
-    switch (c) {
-        case '\n':
-            *VIDEO_MEMORY_CURSOR_PTR += 80 - (*VIDEO_MEMORY_CURSOR_PTR % 80);
-
-            break;
-        case '\r':
-        case '\a':
-            break;
-        default:
-            putchar(c);
-    }
+   	text_out::printc(c);
 }
 
 void puts(char* string) {
-   	while (*string) {
-        _printc_formatted(*string);
-        string++;
-    }
-}
-
-void _print_hex(unsigned int integer, bool upperCase) {
-    char remainingNibbles = 8;
-
-    while (!(integer & 0xF0000000)) {
-		integer <<= 4;
-        remainingNibbles--;
-    }
-
-    while (remainingNibbles--) {
-        char i = integer >> 28;
-        if (i <= 9) {
-            putchar(48 + i);
-        } else if (upperCase) {
-            putchar(55 + i);
-        } else {
-            putchar(87 + i);
-        }
-
-		integer <<= 4;
-    }
-}
-
-void _print_oct(unsigned int integer) {
-    if (integer >= 8) {
-        _print_oct(integer / 8);
-    }
-
-    putchar((integer % 8) + '0');
-}
-
-void _print_dec_unsigned(unsigned int integer) {
-    if (integer >= 10) {
-        _print_dec_unsigned(integer / 10);
-    }
-
-    putchar((integer % 10) + '0');
-}
-
-void _print_dec_signed(int integer) {
-    if (integer < 0) {
-        putchar('-');
-        integer = -integer;
-    }
-
-    _print_dec_unsigned((unsigned int)integer);
+   	text_out::print(string);
 }
 
 void printf(const char *format, ...) {
-    _clear();
-    _reset_cursor();
-
     __builtin_va_list args;
     __builtin_va_start(args, format);
 
@@ -114,23 +22,23 @@ void printf(const char *format, ...) {
                 // TODO: length sub-specifiers...
 				case 'd':
 				case 'i':
-                    _print_dec_signed(__builtin_va_arg(args, int));
+                    text_out::print_dec_signed(__builtin_va_arg(args, int));
 
                     break;
 				case 'u':
-                    _print_dec_unsigned(__builtin_va_arg(args, unsigned int));
+                    text_out::print_dec_unsigned(__builtin_va_arg(args, unsigned int));
 
                     break;
 				case 'o':
-                    _print_oct(__builtin_va_arg(args, unsigned int));
+                    text_out::print_oct(__builtin_va_arg(args, unsigned int));
 
                     break;
 				case 'x':
-                    _print_hex(__builtin_va_arg(args, unsigned int), false);
+                    text_out::print_hex(__builtin_va_arg(args, unsigned int), false);
 
                     break;
 				case 'X':
-                    _print_hex(__builtin_va_arg(args, unsigned int), true);
+                    text_out::print_hex(__builtin_va_arg(args, unsigned int), true);
 
                     break;
                 case 'f':
@@ -150,15 +58,15 @@ void printf(const char *format, ...) {
                     // TODO: Hexadecimal floating point, uppercase
                     break;
                 case 'c':
-            	    putchar(__builtin_va_arg(args, unsigned int));
+            	    text_out::printc(__builtin_va_arg(args, unsigned int));
 
                     break;
                 case 's':
-            	    puts(__builtin_va_arg(args, char *));
+            	    text_out::print(__builtin_va_arg(args, char *));
 
                     break;
                 case 'p':
-                    _print_hex(__builtin_va_arg(args, unsigned int), false);
+                    text_out::print_hex(__builtin_va_arg(args, unsigned int), false);
 
                     break;
                 case 'n':
@@ -171,10 +79,10 @@ void printf(const char *format, ...) {
 
                     break;
                 case '%':
-            		putchar('%');
+            		text_out::printc('%');
             }
         } else {
-            _printc_formatted(*format);
+            text_out::printc(*format);
         }
 
         format++;
