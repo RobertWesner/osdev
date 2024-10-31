@@ -4,6 +4,7 @@
 #include "src/simple_map.h"
 
 #include "shell/test.cpp"
+#include "shell/help.cpp"
 
 #define SHELL_MEM 2048
 
@@ -72,6 +73,7 @@ Shell* shell() {
 
     instance->commands = new simple_map(static_cast<size_t>(256));
     instance->commands->set("test", reinterpret_cast<void*>(&shell_test));
+    instance->commands->set("help", reinterpret_cast<void*>(&shell_help));
 
     return instance;
 }
