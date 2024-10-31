@@ -9,10 +9,6 @@
 #define MEMORY_RESERVED_ADDRESS 0x100000
 #define MEMORY_BEGIN_ADDRESS 0x101000
 
-// The way it's going to be implemented for now is quick and probably not that great as it will lead to increasingly
-// more segmentation into smaller free data without being cleaned up into the large pool it starts as.
-// BUT: I just want to get it working for now without copying from other people
-
 class MemorySection {
     public:
         mutable size_t size;
@@ -94,14 +90,10 @@ class MemoryManager {
         }
 
         void free(void* pointer) {
-            // FREEING CURRENTLY CORRUPTS MEMORY
-            return;
-
-            auto section = reinterpret_cast<MemorySection*>(reinterpret_cast<size_t>(pointer) - this->overhead);
-            section->next = this->availableMemory;
-            this->availableMemory->previous = section;
-
-            this->availableMemory = section;
+            const auto section = reinterpret_cast<MemorySection*>(reinterpret_cast<size_t>(pointer) - this->overhead);
+            this->availableMemory->next->previous = section;
+            this->availableMemory->next = section;
+            section->previous = this->availableMemory;
         }
 
         void* reallocate(void* ptr, size_t size) {
