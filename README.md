@@ -38,55 +38,14 @@ Yes, so far just C libraries...
 
 ### Memory management
 
+Homemade, suboptimally.
+
 see: [MemoryManager.h](src/MemoryManager.h)
 
-The current homemade memory management is neither efficient in terms of space and speed
-nor safe in the long run. See the file for further details.
-It is though very much **made with love** without even knowing how other proper libraries do it.
+Memory Management allocates "pools" of memory to be divided into smaller fixed size sections.
 
-It does support allocation, reallocation and freeing of memory!
-
-A small "graphic" on how it works:
-```
-Free memory is stored as sections. Initially it is one big section.
-Sections are stored as a double linked list leading to them having quite a bit overhead.
-
-This is how your memory looks with sections of different sizes:
-.-------------------------------------------------->
-|    |                |                     |      >
-'-------------------------------------------------->
-
-The manager is told to allocate a new section of size n.
-
-The first section is too small:
-.-------------------------------------------------->
-| X    |                |                    |     >
-'-------------------------------------------------->
-
-The second section fits n or more:
-.-------------------------------------------------->
-|      | X              |                    |     >
-'-------------------------------------------------->
-
-Since it has more capacity than n it gets split into two sections:
-.-------------------------------------------------->
-|      | old      | new |                     |    >
-'-------------------------------------------------->
-
-The references inside the list get patched up since old will be a gaping hole
-in the currently free memory once its gone:
-.-------------------------------------------------->
-| prev >##########< new |                     |    >
-'-------------------------------------------------->
-
-(*old + overhead) is returned as the pointer to allocated memory.
-```
-
-Obviously without cleanup/"compounding" of the splintered sections this will
-lead to the process running out of space for big data at one point.
-
-As said previously, it is not optimal, it is just the first iteration.
-
+Allocating more than `65536` bytes currently leads to memory that cannot be freed.
+All other allocations can be freed easily.
 
 ### Drivers
 
