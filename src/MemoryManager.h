@@ -129,51 +129,63 @@ public:
 
     void* allocate(size_t size) {
         if (size == 1) {
-            return this->pool1->allocate();
+            void* allocated = this->pool1->allocate();
+            if (allocated != nullptr) return allocated;
         }
 
         if (size == 2) {
-            return this->pool2->allocate();
+            void* allocated = this->pool2->allocate();
+            if (allocated != nullptr) return allocated;
         }
 
         if (size <= 4) {
-            return this->pool4->allocate();
+            void* allocated = this->pool4->allocate();
+            if (allocated != nullptr) return allocated;
         }
 
         if (size <= 8) {
-            return this->pool8->allocate();
+            void* allocated = this->pool8->allocate();
+            if (allocated != nullptr) return allocated;
         }
 
         if (size <= 16) {
-            return this->pool16->allocate();
+            void* allocated = this->pool16->allocate();
+            if (allocated != nullptr) return allocated;
         }
 
         if (size <= 32) {
-            return this->pool32->allocate();
+            void* allocated = this->pool32->allocate();
+            if (allocated != nullptr) return allocated;
         }
 
         if (size <= 64) {
-            return this->pool64->allocate();
+            void* allocated = this->pool64->allocate();
+            if (allocated != nullptr) return allocated;
         }
 
         if (size <= 128) {
-            return this->pool128->allocate();
+            void* allocated = this->pool128->allocate();
+            if (allocated != nullptr) return allocated;
         }
 
         if (size <= 256) {
-            return this->pool256->allocate();
+            void* allocated = this->pool256->allocate();
+            if (allocated != nullptr) return allocated;
         }
 
         if (size <= 1024) {
-            return this->pool1024->allocate();
+            void* allocated = this->pool1024->allocate();
+            if (allocated != nullptr) return allocated;
         }
 
         if (size <= 4096) {
-            return this->pool4096->allocate();
+            void* allocated = this->pool4096->allocate();
+            if (allocated != nullptr) return allocated;
         }
 
         if (size <= 65536) {
-            return this->pool65536->allocate();
+            void* allocated = this->pool65536->allocate();
+            if (allocated != nullptr) return allocated;
         }
 
         // cant be freed (yet)
