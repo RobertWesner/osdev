@@ -16,10 +16,12 @@ void setupKeymapDE()
     // 0x1  -> escape
     // 0x5  -> tab
 
-    // 1 - 0
-    for (uint8_t i = 0; i < 10; i++) {
-        keymap->map[i + 0x2] = '0' + i;
+    // 1 - 9
+    uint8_t i = 0;
+    for (; i < 9; i++) {
+        keymap->map[i + 0x2] = '1' + i;
     }
+    keymap->map[0xB] = '0';
 
     keymap->mapShifted[0x2] = '!';
     keymap->mapShifted[0x3] = '"';

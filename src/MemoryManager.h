@@ -90,6 +90,10 @@ class MemoryManager {
         }
 
         void free(void* pointer) {
+            return;
+
+            // the help command corrupts the key mapping for 3 - 6 wtf
+
             const auto section = reinterpret_cast<MemorySection*>(reinterpret_cast<size_t>(pointer) - this->overhead);
             this->availableMemory->next->previous = section;
             this->availableMemory->next = section;
