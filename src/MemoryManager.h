@@ -17,11 +17,10 @@ public:
     bool* freeFlags;
     void* items;
 
-    void* allocate() {
+    void* allocate() const {
         size_t i = 0;
         for (; this->freeFlags[i] == false; i++) {
             if (i > this->itemCount) {
-                // TODO: some kind of error handling would be awesome
                 return nullptr;
             }
         }
@@ -31,7 +30,7 @@ public:
         return reinterpret_cast<void*>(reinterpret_cast<size_t>(this->items) + this->itemSize * i);
     }
 
-    void free(void* p) {
+    void free(void* p) const {
         const size_t n = reinterpret_cast<size_t>(p) - reinterpret_cast<size_t>(this->items);
         if (n > this->itemCount) {
             // massive fail, trying to free item from another pool
@@ -41,7 +40,7 @@ public:
         this->freeFlags[n] = true;
     }
 
-    void* getLocation() {
+    void* getLocation() const {
         return this->freeFlags;
     }
 };
@@ -98,7 +97,7 @@ public:
     void setUp() {
         this->remainingMemory = getMemoryLimit() - MEMORY_BEGIN_ADDRESS;
         this->freeAddress = reinterpret_cast<void*>(MEMORY_BEGIN_ADDRESS);
-        size_t poolItemLimit = this->remainingMemory / 2 / (1 + 2 + 4 + 8 + 16 + 32 + 64 + 128 + 256 + 1024 + 4096 + 65536);
+        const size_t poolItemLimit = this->remainingMemory / 2 / (1 + 2 + 4 + 8 + 16 + 32 + 64 + 128 + 256 + 1024 + 4096 + 65536);
 
         this->pool1 = this->createPool(poolItemLimit, 1);
         this->pool2 = this->createPool(poolItemLimit, 2);
@@ -119,7 +118,7 @@ public:
     /**
      * This gets a raw slice of memory, should not be used directly
      */
-    void* getMemorySlice(size_t size) {
+    void* getMemorySlice(const size_t size) {
         // TODO: handle out of memory, not relevant yet
         const auto slice = this->freeAddress;
         this->freeAddress = reinterpret_cast<void*>(reinterpret_cast<size_t>(this->freeAddress) + size);
@@ -127,7 +126,7 @@ public:
         return slice;
     }
 
-    void* allocate(size_t size) {
+    void* allocate(const size_t size) {
         if (size == 1) {
             void* allocated = this->pool1->allocate();
             if (allocated != nullptr) return allocated;
@@ -192,7 +191,7 @@ public:
         return this->getMemorySlice(size);
     }
 
-    void free(void* pointer) {
+    void free(void* pointer) const {
         if (pointer > this->poolEndIndicator) {
             return;
         }
