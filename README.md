@@ -10,6 +10,10 @@ Everything from booting to memory management, handling devices, reading the file
 
 It is 32bit for now. Will most likely be rewritten for 64bit once I am further educated in this field.
 
+> Clarification:
+> 
+> This boots off floppy disk and has no CD drivers.
+
 
 ## Building
 
